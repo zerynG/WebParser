@@ -21,7 +21,8 @@ class Command(BaseCommand):
             # Импортируем ваш парсер результатов КХЛ
             from KhlFonResParser import KhlResultsParser
 
-            self.stdout.write(self.style.SUCCESS('🚀 Запуск парсера результатов КХЛ...'))
+            # Используем простой текст вместо emoji для Windows
+            self.stdout.write('Запуск парсера результатов КХЛ...')
 
             # Создаем экземпляр парсера
             parser = KhlResultsParser(headless=options['headless'])
@@ -29,7 +30,7 @@ class Command(BaseCommand):
             # Запускаем парсинг
             parser.run()
 
-            self.stdout.write(self.style.SUCCESS('✅ Парсинг результатов КХЛ завершен успешно!'))
+            self.stdout.write(self.style.SUCCESS('Парсинг результатов КХЛ завершен успешно!'))
 
         except Exception as e:
-            self.stdout.write(self.style.ERROR(f'❌ Ошибка при парсинге результатов КХЛ: {e}'))
+            self.stdout.write(self.style.ERROR(f'Ошибка при парсинге результатов КХЛ: {e}'))

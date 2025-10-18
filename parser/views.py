@@ -10,10 +10,8 @@ from datetime import datetime
 
 def control_panel(request):
     """Страница управления парсерами"""
-    # Проверяем существование CSV файлов для отображения статуса
     file_info = {}
 
-    # Определяем файлы для проверки
     files_to_check = {
         'nhl_odds': 'nhl_odds.csv',
         'nhl_results': 'nhl_results_final.csv',
@@ -50,7 +48,6 @@ def count_csv_records(file_path):
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
             lines = f.readlines()
-            # Вычитаем заголовок
             return max(0, len(lines) - 1)
     except:
         return 0
@@ -65,6 +62,8 @@ def run_parser(request):
             parser_type = data.get('parser_type')
             headless = data.get('headless', False)
 
+            print(f"Запуск парсера: {parser_type}, headless: {headless}")
+
             # Определяем команду в зависимости от типа парсера
             command_map = {
                 'nhl_odds': ['python', 'manage.py', 'parse_nhl_odds'],
@@ -78,9 +77,12 @@ def run_parser(request):
 
             command = command_map[parser_type]
 
-            # Добавляем флаг headless если нужно
-            if headless:
+            # Добавляем флаг headless если нужно (инвертируем логику)
+            if not headless:  # Если галочка НЕ установлена - показываем браузер
                 command.append('--headless')
+            # Если headless=True, то не добавляем флаг (по умолчанию в парсерах headless=True)
+
+            print(f"Выполняемая команда: {' '.join(command)}")
 
             # Запускаем в отдельном потоке чтобы не блокировать ответ
             def run_parser_thread():
@@ -89,13 +91,21 @@ def run_parser(request):
                         command,
                         capture_output=True,
                         text=True,
-                        cwd='.'  # Рабочая директория проекта
+                        cwd='.',  # Рабочая директория проекта
+                        encoding='utf-8',  # Явно указываем кодировку
+                        errors='ignore'  # Игнорируем ошибки кодировки
                     )
-                    print(f"Parser {parser_type} output: {result.stdout}")
+
+                    print(f"Парсер {parser_type} завершил работу с кодом: {result.returncode}")
+
+                    if result.stdout:
+                        print(f"Парсер {parser_type} stdout: {result.stdout}")
+
                     if result.stderr:
-                        print(f"Parser {parser_type} errors: {result.stderr}")
+                        print(f"Парсер {parser_type} stderr: {result.stderr}")
+
                 except Exception as e:
-                    print(f"Parser {parser_type} thread error: {e}")
+                    print(f"Ошибка при запуске парсера {parser_type}: {e}")
 
             thread = threading.Thread(target=run_parser_thread)
             thread.daemon = True
@@ -107,6 +117,7 @@ def run_parser(request):
             })
 
         except Exception as e:
+            print(f"Ошибка при запуске парсера: {e}")
             return JsonResponse({'status': 'error', 'message': str(e)})
 
     return JsonResponse({'status': 'error', 'message': 'Only POST requests allowed'})

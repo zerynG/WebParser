@@ -21,7 +21,7 @@ class Command(BaseCommand):
             # Импортируем ваш парсер КХЛ
             from KhlFonParser import KhlFonBetParser
 
-            self.stdout.write(self.style.SUCCESS('🚀 Запуск парсера котировок КХЛ...'))
+            self.stdout.write('Запуск парсера котировок КХЛ...')
 
             # Создаем экземпляр парсера
             parser = KhlFonBetParser(headless=options['headless'])
@@ -29,7 +29,7 @@ class Command(BaseCommand):
             # Запускаем парсинг
             parser.run()
 
-            self.stdout.write(self.style.SUCCESS('✅ Парсинг котировок КХЛ завершен успешно!'))
+            self.stdout.write(self.style.SUCCESS('Парсинг котировок КХЛ завершен успешно!'))
 
         except Exception as e:
-            self.stdout.write(self.style.ERROR(f'❌ Ошибка при парсинге КХЛ: {e}'))
+            self.stdout.write(self.style.ERROR(f'Ошибка при парсинге КХЛ: {e}'))

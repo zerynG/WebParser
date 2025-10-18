@@ -18,10 +18,10 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         try:
-            # Импортируем ваш парсер результатов
+            # Импортируем ваш парсер результатов НХЛ
             from NhlFonResParser import NhlResultsParser
 
-            self.stdout.write(self.style.SUCCESS('🚀 Запуск парсера результатов НХЛ...'))
+            self.stdout.write('Запуск парсера результатов НХЛ...')
 
             # Создаем экземпляр парсера
             parser = NhlResultsParser(headless=options['headless'])
@@ -29,7 +29,7 @@ class Command(BaseCommand):
             # Запускаем парсинг
             parser.run()
 
-            self.stdout.write(self.style.SUCCESS('✅ Парсинг результатов НХЛ завершен успешно!'))
+            self.stdout.write(self.style.SUCCESS('Парсинг результатов НХЛ завершен успешно!'))
 
         except Exception as e:
-            self.stdout.write(self.style.ERROR(f'❌ Ошибка при парсинге результатов: {e}'))
+            self.stdout.write(self.style.ERROR(f'Ошибка при парсинге результатов НХЛ: {e}'))
