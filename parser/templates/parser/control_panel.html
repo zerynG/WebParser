@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Управление парсерами - Sports Parser</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Шапка */
+        .site-header {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid #334155;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .nav-brand a {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #60a5fa;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: #cbd5e1;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            background: #1e293b;
+            color: #60a5fa;
+        }
+
+        /* Основной контент */
+        .main-content {
+            padding: 2rem 0;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .page-subtitle {
+            color: #94a3b8;
+            font-size: 1.1rem;
+        }
+
+        /* Панель парсеров */
+        .parsers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .parser-card {
+            background: #1e293b;
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid #334155;
+            transition: all 0.3s ease;
+        }
+
+        .parser-card:hover {
+            border-color: #60a5fa;
+            transform: translateY(-5px);
+        }
+
+        .parser-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .parser-icon {
+            font-size: 2.5rem;
+        }
+
+        .parser-title {
+            font-size: 1.5rem;
+            color: #f1f5f9;
+        }
+
+        .parser-description {
+            color: #94a3b8;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .file-info {
+            margin-bottom: 1rem;
+            padding: 0.5rem;
+            background: #0f172a;
+            border-radius: 6px;
+            border: 1px solid #334155;
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+
+        .parser-controls {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-success {
+            background: #16a34a;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #15803d;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .status-ready {
+            background: #16a34a;
+            color: white;
+        }
+
+        .status-running {
+            background: #ca8a04;
+            color: white;
+        }
+
+        .status-error {
+            background: #dc2626;
+            color: white;
+        }
+
+        /* Логи */
+        .logs-section {
+            background: #1e293b;
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid #334155;
+        }
+
+        .logs-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .logs-title {
+            font-size: 1.3rem;
+            color: #f1f5f9;
+        }
+
+        .logs-content {
+            background: #0f172a;
+            border-radius: 8px;
+            padding: 1rem;
+            height: 200px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: #94a3b8;
+            border: 1px solid #334155;
+        }
+
+        .log-entry {
+            margin-bottom: 0.5rem;
+            padding: 0.25rem 0;
+        }
+
+        .log-time {
+            color: #64748b;
+        }
+
+        .log-info {
+            color: #60a5fa;
+        }
+
+        .log-success {
+            color: #22c55e;
+        }
+
+        .log-error {
+            color: #ef4444;
+        }
+
+        .log-warning {
+            color: #eab308;
+        }
+
+        /* Уведомления */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            background: #16a34a;
+        }
+
+        .notification.error {
+            background: #dc2626;
+        }
+
+        .notification.info {
+            background: #2563eb;
+        }
+    </style>
+</head>
+<body>
+    <!-- Шапка -->
+    <header class="site-header">
+        <nav class="navbar">
+            <div class="nav-brand">
+                <a href="{% url 'core:home' %}">🏒 Sports Parser</a>
+            </div>
+            <div class="nav-links">
+                <a href="{% url 'core:home' %}">Главная</a>
+                <a href="{% url 'schedule:nhl_schedule' %}">Расписания</a>
+                <a href="{% url 'results:nhl_results' %}">Результаты</a>
+                <a href="{% url 'parser:control_panel' %}" class="active">Парсинг</a>
+                <a href="/admin/">Админка</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Основной контент -->
+    <main class="main-content">
+        <div class="container">
+            <div class="page-header">
+                <h1 class="page-title">⚡ Управление парсерами</h1>
+                <p class="page-subtitle">Запуск парсеров для обновления данных котировок и результатов НХЛ и КХЛ</p>
+            </div>
+
+            <!-- Панель парсеров -->
+            <div class="parsers-grid">
+                <!-- Парсер котировок НХЛ -->
+                <div class="parser-card">
+                    <div class="parser-header">
+                        <div class="parser-icon">🇺🇸</div>
+                        <h2 class="parser-title">Котировки НХЛ</h2>
+                    </div>
+                    <p class="parser-description">
+                        Парсинг актуальных котировок матчей Национальной Хоккейной Лиги с сайта FonBet
+                    </p>
+                    <div class="file-info">
+                        Файл: nhl_odds.csv | Записей: {{ file_info.nhl_odds.records }} | Обновлен: {{ file_info.nhl_odds.modified }}
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="nhl-odds-headless" checked>
+                        <label for="nhl-odds-headless">Фоновый режим (без браузера)</label>
+                    </div>
+                    <div class="parser-controls">
+                        <button class="btn btn-primary" onclick="runParser('nhl_odds')">
+                            ▶ Запустить парсинг
+                        </button>
+                        <span class="status-indicator status-ready" id="nhl-odds-status">
+                            ● Готов
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Парсер результатов НХЛ -->
+                <div class="parser-card">
+                    <div class="parser-header">
+                        <div class="parser-icon">📊</div>
+                        <h2 class="parser-title">Результаты НХЛ</h2>
+                    </div>
+                    <p class="parser-description">
+                        Парсинг результатов завершенных матчей НХЛ и обновление котировок
+                    </p>
+                    <div class="file-info">
+                        Файл: nhl_results_final.csv | Записей: {{ file_info.nhl_results.records }} | Обновлен: {{ file_info.nhl_results.modified }}
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="nhl-results-headless" checked>
+                        <label for="nhl-results-headless">Фоновый режим (без браузера)</label>
+                    </div>
+                    <div class="parser-controls">
+                        <button class="btn btn-success" onclick="runParser('nhl_results')">
+                            ▶ Запустить парсинг
+                        </button>
+                        <span class="status-indicator status-ready" id="nhl-results-status">
+                            ● Готов
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Парсер котировок КХЛ -->
+                <div class="parser-card">
+                    <div class="parser-header">
+                        <div class="parser-icon">🇷🇺</div>
+                        <h2 class="parser-title">Котировки КХЛ</h2>
+                    </div>
+                    <p class="parser-description">
+                        Парсинг актуальных котировок матчей Континентальной Хоккейной Лиги с сайта FonBet
+                    </p>
+                    <div class="file-info">
+                        Файл: khl_odds.csv | Записей: {{ file_info.khl_odds.records }} | Обновлен: {{ file_info.khl_odds.modified }}
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="khl-odds-headless" checked>
+                        <label for="khl-odds-headless">Фоновый режим (без браузера)</label>
+                    </div>
+                    <div class="parser-controls">
+                        <button class="btn btn-primary" onclick="runParser('khl_odds')">
+                            ▶ Запустить парсинг
+                        </button>
+                        <span class="status-indicator status-ready" id="khl-odds-status">
+                            ● Готов
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Парсер результатов КХЛ -->
+                <div class="parser-card">
+                    <div class="parser-header">
+                        <div class="parser-icon">📈</div>
+                        <h2 class="parser-title">Результаты КХЛ</h2>
+                    </div>
+                    <p class="parser-description">
+                        Парсинг результатов завершенных матчей КХЛ и обновление котировок
+                    </p>
+                    <div class="file-info">
+                        Файл: khl_results_final.csv | Записей: {{ file_info.khl_results.records }} | Обновлен: {{ file_info.khl_results.modified }}
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="khl-results-headless" checked>
+                        <label for="khl-results-headless">Фоновый режим (без браузера)</label>
+                    </div>
+                    <div class="parser-controls">
+                        <button class="btn btn-success" onclick="runParser('khl_results')">
+                            ▶ Запустить парсинг
+                        </button>
+                        <span class="status-indicator status-ready" id="khl-results-status">
+                            ● Готов
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Логи -->
+            <div class="logs-section">
+                <div class="logs-header">
+                    <h3 class="logs-title">📋 Логи выполнения</h3>
+                    <button class="btn btn-secondary" onclick="clearLogs()">
+                        🗑️ Очистить логи
+                    </button>
+                </div>
+                <div class="logs-content" id="logs-content">
+                    <div class="log-entry">
+                        <span class="log-time">[{{ current_time }}]</span>
+                        <span class="log-info">Система:</span> Панель управления парсерами загружена
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Уведомления -->
+    <div class="notification" id="notification"></div>
+
+    <script>
+        // Функция запуска парсера
+        async function runParser(parserType) {
+            const headless = document.getElementById(`${parserType.replace('_', '-')}-headless`).checked;
+            const statusElement = document.getElementById(`${parserType.replace('_', '-')}-status`);
+
+            // Обновляем статус
+            statusElement.textContent = '● Выполняется...';
+            statusElement.className = 'status-indicator status-running';
+
+            // Добавляем запись в логи
+            addLog(`Запуск парсера: ${parserType} (headless: ${headless})`, 'info');
+
+            try {
+                const response = await fetch('/parser/run/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify({
+                        parser_type: parserType,
+                        headless: headless
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    showNotification(data.message, 'success');
+                    addLog(`Парсер ${parserType} запущен успешно`, 'success');
+
+                    // Через 30 секунд возвращаем статус "Готов"
+                    setTimeout(() => {
+                        statusElement.textContent = '● Готов';
+                        statusElement.className = 'status-indicator status-ready';
+                        addLog(`Парсер ${parserType} завершил работу`, 'info');
+                    }, 30000);
+
+                } else {
+                    throw new Error(data.message);
+                }
+
+            } catch (error) {
+                showNotification(`Ошибка: ${error.message}`, 'error');
+                addLog(`Ошибка запуска парсера: ${error.message}`, 'error');
+
+                // Возвращаем статус "Готов" при ошибке
+                statusElement.textContent = '● Готов';
+                statusElement.className = 'status-indicator status-ready';
+            }
+        }
+
+        // Вспомогательные функции
+        function addLog(message, type = 'info') {
+            const logsContent = document.getElementById('logs-content');
+            const time = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry';
+            logEntry.innerHTML = `
+                <span class="log-time">[${time}]</span>
+                <span class="log-${type}">${message}</span>
+            `;
+            logsContent.appendChild(logEntry);
+            logsContent.scrollTop = logsContent.scrollHeight;
+        }
+
+        function clearLogs() {
+            const logsContent = document.getElementById('logs-content');
+            logsContent.innerHTML = `
+                <div class="log-entry">
+                    <span class="log-time">[${new Date().toLocaleTimeString()}]</span>
+                    <span class="log-info">Система:</span> Логи очищены
+                </div>
+            `;
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type} show`;
+
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 5000);
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', function() {
+            addLog('Система готова к работе', 'success');
+        });
+    </script>
+</body>
+</html>

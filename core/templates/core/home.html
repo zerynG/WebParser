@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sports Parser - Главная</title>
+
+    <!-- Статические файлы core -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
+</head>
+<body>
+    <!-- Шапка -->
+    <header class="site-header">
+        <nav class="navbar">
+            <div class="nav-brand">
+                <a href="{% url 'core:home' %}">🏒 Sports Parser</a>
+            </div>
+            <div class="nav-links">
+                <a href="{% url 'core:home' %}" class="active">Главная</a>
+                <a href="{% url 'schedule:nhl_schedule' %}">Расписания</a>
+                <a href="{% url 'results:nhl_results' %}">Результаты</a>
+                <a href="{% url 'parser:control_panel' %}">Парсинг</a>
+                <a href="/admin/">Админка</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Основной контент -->
+    <main class="main-content">
+        <!-- Герой секция -->
+        <section class="hero-section">
+            <div class="hero-content">
+                <h1 class="hero-title">🏒 Sports Parser</h1>
+                <p class="hero-subtitle">Платформа для анализа спортивных событий и котировок НХЛ и КХЛ</p>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">0</span>
+                        <span class="stat-label">Матчей НХЛ</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">0</span>
+                        <span class="stat-label">Матчей КХЛ</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">1.0</span>
+                        <span class="stat-label">Версия</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Навигационные карточки -->
+        <section class="navigation-section">
+            <div class="container">
+                <h2 class="section-title">Доступные разделы</h2>
+
+                <div class="navigation-grid">
+                    <!-- Карточка НХЛ -->
+                    <div class="nav-card nhl-card" onclick="location.href='#'">
+                        <div class="card-icon">🇺🇸</div>
+                        <h3 class="card-title">НХЛ</h3>
+                        <p class="card-description">Расписания и результаты матчей Национальной Хоккейной Лиги</p>
+                        <div class="card-stats">
+                            <div class="card-stat">
+                                <span class="stat-label">Котировки</span>
+                                <span class="stat-value">0</span>
+                            </div>
+                            <div class="card-stat">
+                                <span class="stat-label">Результаты</span>
+                                <span class="stat-value">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Карточка КХЛ -->
+                    <div class="nav-card khl-card" onclick="location.href='#'">
+                        <div class="card-icon">🇷🇺</div>
+                        <h3 class="card-title">КХЛ</h3>
+                        <p class="card-description">Расписания и результаты матчей Континентальной Хоккейной Лиги</p>
+                        <div class="card-stats">
+                            <div class="card-stat">
+                                <span class="stat-label">Котировки</span>
+                                <span class="stat-value">0</span>
+                            </div>
+                            <div class="card-stat">
+                                <span class="stat-label">Результаты</span>
+                                <span class="stat-value">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Карточка Парсинг -->
+                    <div class="nav-card parser-card" onclick="location.href='{% url 'parser:control_panel' %}'">
+                        <div class="card-icon">⚡</div>
+                        <h3 class="card-title">Парсинг данных</h3>
+                        <p class="card-description">Запуск парсеров для обновления котировок и результатов матчей</p>
+                        <div class="card-status">
+                            <span class="status-badge ready">Готов</span>
+                            <span class="status-text">Система ожидает команд</span>
+                        </div>
+                    </div>
+
+                    <!-- Карточка Админка -->
+                    <div class="nav-card admin-card" onclick="location.href='/admin/'">
+                        <div class="card-icon">🔧</div>
+                        <h3 class="card-title">Администрирование</h3>
+                        <p class="card-description">Управление данными и настройками системы</p>
+                        <div class="card-status">
+                            <span class="status-badge admin">Админ</span>
+                            <span class="status-text">Панель управления</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Статус системы -->
+        <section class="status-section">
+            <div class="container">
+                <h2 class="section-title">Статус системы</h2>
+                <div class="status-grid">
+                    <div class="status-item">
+                        <div class="status-icon">🔄</div>
+                        <div class="status-info">
+                            <div class="status-label">Последнее обновление</div>
+                            <div class="status-value">-</div>
+                        </div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-icon">✅</div>
+                        <div class="status-info">
+                            <div class="status-label">Статус парсеров</div>
+                            <div class="status-value">Активен</div>
+                        </div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-icon">📊</div>
+                        <div class="status-info">
+                            <div class="status-label">Всего данных</div>
+                            <div class="status-value">0 записей</div>
+                        </div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-icon">🚀</div>
+                        <div class="status-info">
+                            <div class="status-label">Производительность</div>
+                            <div class="status-value">Оптимальная</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Подвал -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2024 Sports Parser. Все права защищены.</p>
+                <p>Версия 1.0 | Разработано для анализа хоккейных матчей</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Скрипты -->
+    <script src="{% static 'core/js/main.js' %}"></script>
+</body>
+</html>
