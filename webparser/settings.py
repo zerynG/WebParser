@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'parser',
     'schedule',
     'results',
+    'csv_importer',
 ]
 
 MIDDLEWARE = [
